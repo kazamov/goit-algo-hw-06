@@ -64,6 +64,38 @@ def visualize_graph(graph):
     plt.show()
 
 
+def bfs_recursive(graph, start, visited=None, queue=None):
+    if visited is None:
+        visited = []
+    if queue is None:
+        queue = [start]
+
+    if not queue:
+        return visited
+
+    current_node = queue.pop(0)
+    if current_node not in visited:
+        visited.append(current_node)
+        queue.extend(
+            neighbor
+            for neighbor in graph.neighbors(current_node)
+            if neighbor not in visited
+        )
+
+    return bfs_recursive(graph, start, visited, queue)
+
+
+def dfs_recursive(graph, vertex, visited=None):
+    if visited is None:
+        visited = []
+    visited.append(vertex)
+    for neighbor in graph[vertex]:
+        if neighbor not in visited:
+            dfs_recursive(graph, neighbor, visited)
+
+    return visited
+
+
 def dijkstra(graph, start):
     distances = {node: float("inf") for node in graph.nodes()}
     distances[start] = 0
@@ -90,13 +122,11 @@ if __name__ == "__main__":
     describe_graph(G)
 
     # Завдання 2
-    print("DFS-дерево:")
-    dfs_tree = nx.dfs_tree(G, source="A")
-    print(list(dfs_tree.edges()))
+    print("DFS-обхід:")
+    print(" ".join(dfs_recursive(G, "A")))
 
-    print("BFS-дерево:")
-    bfs_tree = nx.bfs_tree(G, source="A")
-    print(list(bfs_tree.edges()))
+    print("BFS-обхід:")
+    print(" ".join(bfs_recursive(G, "A")))
 
     # Завдання 3
     print("Найкоротші відстані від вершини A:")
